@@ -17,15 +17,15 @@ ui <- fluidPage(
     # Sidebar panel for inputs ----
     sidebarPanel(
       # Input: Slider for the number of bins ----
-      sliderInput(inputId = "bins",
+      sliderInput(inputId = "bins_choice",
                   label = "Number of bins:",
                   min = 1,
                   max = 30,
                   value = 10),
-      checkboxGroupInput(inputId = 'flowers', label = 'Species', 
+      checkboxGroupInput(inputId = 'flowers_choice', label = 'Species', 
                          choices = c('setosa', 'virginica', 'versicolor'),
                          selected = c('setosa', 'virginica', 'versicolor')),
-      radioButtons(inputId = 'facet', label = 'Facet by species', choices = c('Yes', 'No')),
+      radioButtons(inputId = 'facet_choice', label = 'Facet by species', choices = c('Yes', 'No')),
       
       # Make an 'action button' that does something when clicked
       actionButton("do", "Click Me")
@@ -48,7 +48,7 @@ ui <- fluidPage(
 # SERVER FUNCTION ---------------------------------------------------------
 
 server_function <- function(input, output) {
-  # Histogram of the Old Faithful Geyser Data ----
+  # Histogram of the Iris Data ----
   # with requested number of bins
   # This expression that generates a histogram is wrapped in a call
   # to renderPlot to indicate that:
@@ -59,10 +59,10 @@ server_function <- function(input, output) {
   output$my_plot <- renderPlot({
     
     # Filter the iri data according to the input -- the user is choosing which species to display
-    df = dplyr::filter(iris, Species %in% input$flowers)
+    df = dplyr::filter(iris, Species %in% input$flowers_choice)
     
     # Set the histogram bins based on user input for number of bins
-    hist_bins <- seq(min(df$Sepal.Length), max(df$Sepal.Length), length.out = input$bins + 1)
+    hist_bins <- seq(min(df$Sepal.Length), max(df$Sepal.Length), length.out = input$bins_choice + 1)
     
     # create the plot
     iris_plot = ggplot(df, aes(Sepal.Length)) +
@@ -74,7 +74,7 @@ server_function <- function(input, output) {
       theme(text = element_text(face = 'bold'))
     
     # if faceting by species, make the facets
-    if (input$facet == 'Yes'){
+    if (input$facet_choice == 'Yes'){
       iris_plot = iris_plot + facet_grid(~Species)
     }
     
