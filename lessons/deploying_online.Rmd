@@ -1,0 +1,84 @@
+---
+title: "Deploying shiny apps online!"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: journal
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+![The flow of information for Shiny apps betwen cloud-based servers and multiple users](https://shiny.rstudio.com/images/scaling-and-tuning1.png)
+
+
+## 0. What's the big deal? Doesn't the app already exist!
+
+Yes! The app exists 'locally' on your own hard drive, but the problem is that any Shiny app requires R to actively running to be able to be used. If you want others to be able to use your app, you won't want to have to ensure that R is active on your own personal computer any time someone wants to use your app. In addition, we might want the app to be available so that *multiple* users can access it at the same time. This requires a system that can handle running the app multiple times at once (or creating multiple 'instances' of the app) for different simultaneous users. 
+
+So, instead we can upload our Shiny apps to run on servers based on the web. This way, R runs on the web servers (which are always on) to provide your Shiny app to users at any time. There are multiple ways of doing this -- but for now we'll learn how to do this using the shinyapps.io website, which is run by Rstudio.
+
+## 1. Make an account on shinyapps.io
+
+You can sign up for free at https://www.shinyapps.io/ There are priced account options if you are uploading lots of apps or expect lots of users, but a basic account is free.
+
+## 2. Install the R package rsconnect
+
+This package allows you to upload your local shiny app to be deployed as a web page on the shinyapps.io server. You can install this by running:
+
+`install.packages('rsconnect')`
+
+
+## 3. Configure the Rsconnect package with your shinyapps.io account
+
+Here, you'll first want to make sure you've loaded the rsconnect package with:
+
+`library(rsconnect)`
+
+The next thing to do is to set up the Rsconnect package to be in sync with your shinyapps.io account. The first thing you'll need to do is to create access tokens from your shinyapps.io account. You can find these under the 'account' panel on your shinyapps.io account
+
+
+![Setting up access tokens](tokens.png){#id .class width=20% height=20%}
+
+If you don't have any tokens yet, you'll want to click the 'Add Token' button to set up some. Then, once you have a token displayed, you can click 'show', and copy it to the clipboard as in the image below. The resulting code can be run directly in R to set up your account access.
+
+![Configuring Rsconnect Package](https://shiny.rstudio.com/images/tokens2.png)
+
+
+## 4. Deploy the app!
+
+The final step is now to upload your app! You can do this by running:
+
+`rsconnect::deployApp(<path to application directory>)`
+
+You'll want to make sure that you are correctly specifying the path to the *directory* containing the app you want to upload here. The app will then be uploaded and deployed to the link `https://<your account name>.shinyapps.io/<path to your application directory>/` (for example https://pbloom.shinyapps.io/example_app/), so you might want to name your app directory with what you want the URL to be in mind. 
+
+This step may take a *while*, especially if you are uploading large files or are using lots of packages. Under the hood, shinyapps.io is making sure to install all the same packages you used and make the same file directory on the server, and this can take a while for some packages (i.e. tidyverse). You'll see something like this:
+
+![Deploying your app for the first time](initial_deploy.png){#id .class width=80% height=20%}
+
+## 5. Modifying your app & re-uploading! 
+
+If you want to make changes to an app that is already running on the shinyapps.io server, this isn't hard! You can make any changes you want to the local version of the app, make sure it runs properly, then run the same code as in step 4:
+
+`rsconnect::deployApp(<path to application directory>)`
+
+You'll then see a popup asking if you want to 'Update application currently deployed at <link to your app>'. You can press y to go forward and update your app! Note: I believe it will have to install packages and update the files, so this could also take a long time. 
+
+
+![Re-deploying your app](redeploy.png){#id .class width=50% height=20%}
+
+## 6. Making more shiny apps! 
+
+If you want to make more shiny apps, you can make them locally in different folders, then start at step #4 (you'll need to make sure you've loaded rsconnect, but no more installation or access tokens should be needed if you're using the same computer and Rstudio).
+
+shinyapps.io lets you upload up to 5 apps for free, then you'll need to pay for your account for more apps beyond that
+
+## 7. Managing/Deleting shiny apps
+
+For shiny apps that you've already uploaded, you can check on them, get stats on usage, and delete them directly from the shinyapps.io applications tab. To delete a running app, for example, you can click on the trash can over to the right.
+
+![Managing your uploaded apps](apps_manager.png)
+
